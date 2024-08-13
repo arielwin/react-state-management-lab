@@ -82,7 +82,8 @@ const App = () => {
     ]
   )
   
-  const totalStrength = team.reduce((acc, fighter) => acc + fighter.strength, 0)
+  const [totalStrength, setTotalStrength] = useState(0)
+  const [totalAgility, setTotalAgility] = useState(0)
 
 
   const handleAddFighter = (newFighter) => {
@@ -91,35 +92,49 @@ const App = () => {
     if(money > newFighter.price) {
       setTeam([...team, newFighter])
       setMoney(money - newFighter.price)
+      setTotalStrength(totalStrength + newFighter.strength)
+      setTotalAgility(totalAgility + newFighter.agility)
     } else {
       alert('Not enough money')
     }
+  }
 
-}
+  const handleRemoveFighter = (index) => {
+    const fighterToRemove = team[index];
+    setTeam((prevTeam) => prevTeam.filter((_, idx) => idx !== index));
+    setMoney((prevMoney) => prevMoney + fighterToRemove.price);
+    setTotalStrength((prevStrength) => prevStrength - fighterToRemove.strength);
+    setTotalAgility((prevAgility) => prevAgility - fighterToRemove.agility);
+  }
+
 
   return (
     <>
     <div>
+      <h2>Money: {money}</h2>
+      <h2>Total Team Strength: {totalStrength}</h2>
+      <h2>Total team Agility: {totalAgility}</h2>
+    </div>
+    <div>
       <h1>Team:</h1>
-        {team.map((member) => (
+        {team.map((member, idx) => (
           <div className='fighterCard'>
-            <ul>
+            <ul key={idx}>
                 <img src={member.img} alt={member.name} />
                 <h3>{member.name}</h3>
                 <li>Price: {member.price}</li>
                 <li>Strength: {member.strength}</li>
                 <li>Agility: {member.agility}</li>
+                <button onClick={() => handleRemoveFighter(idx)}>Remove Fighter from Team</button>
+
             </ul>
           </div>
       ))}
     </div>
     <div>
-      <h2>Money: {money}</h2>
-    </div>
-    <div>
       <h2>Zombie Fighters:</h2>
-      {zombieFighters.map((fighter) => (
-          <ul>
+      {zombieFighters.map((fighter, idx) => (
+          <ul key={idx}>
             <img src={fighter.img} alt={fighter.name} />
             <h3>{fighter.name}</h3>
             <li>Price: {fighter.price}</li>
